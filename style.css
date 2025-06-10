@@ -1,0 +1,246 @@
+/* 基础设置 */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f7f7;
+    text-align: center;
+  }
+  
+  /* hero 背景区域，占据大部分屏幕高度 */
+.hero {
+  width: 100%;
+  height: 80vh; /* 占据屏幕高度的80%，你可以调为100vh看效果 */
+  background-image: url("../assets/banner.jpg");
+  background-size: cover;         /* 图片覆盖整个区域 */
+  background-position: center;    /* 居中显示 */
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 黑色半透明覆盖层（可选） */
+.hero-overlay {
+  background-color: rgba(0, 0, 0, 0.4); /* 半透明黑背景提升文字可读性 */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* h1 文字样式 */
+.hero h1 {
+  color: white;
+  font-size: 6rem;
+  text-align: center;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
+  padding: 20px;
+}
+
+  
+  .hero-image {
+    width: 100%;            /* 横向填满整个容器 */
+    height: auto;           /* 自动保持原始比例缩放 */
+    display: block;         /* 去除底部的空白间隙 */
+    object-fit: cover;      /* 裁剪图片填满容器（会保留中心内容） */
+    max-height: 400px;      /* 可选，限制最大高度 */
+  }
+  
+  h1 {
+    margin: 10px 0;
+  }
+  
+
+  /*业务员页面*/
+.sales-hero {
+  width: 100%;
+  height: 80vh; /* 占据屏幕高度的80%，你可以调为100vh看效果 */
+  background-image: url("../assets/salesbanner.jpg");
+  background-size: cover;         /* 图片覆盖整个区域 */
+  background-position: center;    /* 居中显示 */
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 业务员标题样式 */
+.sales-hero h1 {
+  color: white;
+  font-size: 6rem;      /* 调整字体大小，使之不显得突兀 */
+  text-align: center;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+  padding: 10px;
+}
+
+
+  /* 按钮容器：左右并排，居中对齐 */
+.main-buttons {
+  display: flex;
+  flex-direction: row;      /* 横向排列 */
+  justify-content: center;  /* 居中对齐 */
+  align-items: center;
+  gap: 40px;                /* 按钮间距 */
+  margin-top: 80px;
+}
+
+/* 卡片式按钮基础样式 */
+.card-btn {
+  position: relative;
+  width: 600px;             /* 竖着的长方形，窄一点更竖 */
+  height: 220px;            /* 高度足够展示图标+文字 */
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  background-color: white;  /* 默认白底，遮罩在上面 */
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 图标 */
+.card-btn .icon {
+  font-size: 48px;
+  z-index: 2;
+}
+
+/* 文字 */
+.card-btn .text {
+  font-size: 40px;
+  margin-top: 24px;
+  z-index: 4;
+  color: #ffffff;
+}
+
+/* 蓝色滑动遮罩 */
+.card-btn .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #40875b;
+  z-index: 1;
+  transition: transform 0.4s ease;
+  transform: translateY(0);
+}
+
+/* 悬停：遮罩上滑消失，露出白底 */
+.card-btn:hover .overlay {
+  transform: translateY(-100%);
+}
+
+/* 悬停：图标微放大，文字颜色加深 */
+.card-btn:hover .icon {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+.card-btn:hover .text {
+  color: #222;
+}
+
+  /* 规划师页面 */
+.planner-hero {
+  width: 100%;
+  height: 80vh; /* 占据屏幕高度的80%，你可以调为100vh看效果 */
+  background-image: url("../assets/plannerbanner.jpg");
+  background-size: cover;         /* 图片覆盖整个区域 */
+  background-position: center;    /* 居中显示 */
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 黑色半透明覆盖层 */
+.planner-overlay {
+  background-color: rgba(0, 0, 0, 0.5); /* 提升对比度 */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 规划师标题样式 */
+.planner-hero h1 {
+  color: white;
+  font-size: 6rem;      /* 调整字体大小，使之不显得突兀 */
+  text-align: center;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+  padding: 10px;
+}
+
+
+/* 顶部大图、遮罩与标题 */
+.planner-hero {
+  position: relative;
+  background: url('../images/hero.jpg') center/cover no-repeat;
+  height: 200px;
+}
+.planner-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.planner-hero h1 {
+  color: #fff;
+  font-size: 2.5rem;
+}
+
+
+
+/* 线路管理和新增／修改部分样式 */
+.route-list, .add-route {
+  max-width: 600px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.route-list h2, .add-route h2 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+/* 线路列表 */
+#routeList {
+  list-style: none;
+  padding: 0;
+}
+#routeList li {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+/* 表单 */
+#routeForm input {
+  width: calc(50% - 20px);
+  margin: 0 10px 20px;
+  padding: 8px;
+  font-size: 1rem;
+}
+#routeForm button {
+  padding: 10px 30px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #28a745;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color .2s;
+}
+#routeForm button:hover {
+  background-color: #218838;
+}
