@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单支付查询</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .button-container button {
+            width: 30%; /* 调整宽度以适应同一行布局 */
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .modal h3 {
+            margin: 0 0 10px 0;
+        }
+        .modal button {
+            margin-top: 10px;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>订单支付查询</h1>
+        <div class="form-group">
+            <label for="paymentCode">订单编号</label>
+            <input type="text" id="paymentCode" placeholder="输入订单编号">
+        </div>
+        <button onclick="queryStatus()">查询</button>
+        <div class="result" id="result">
+            <h2>查询结果</h2>
+            <p><strong>旅行团代码：</strong><span id="tourCode"></span></p>
+            <p><strong>申请人姓名：</strong><span id="applicantName"></span></p>
+            <p><strong>支付状态：</strong><span id="isPaid"></span></p>
+            <div class="button-container">
+                <button id="modifyButton" onclick="modifyInfo()">修改信息</button>
+                <button id="deleteButton" onclick="deleteInfo()">取消订单</button>
+                <button id="payButton" onclick="submitPayment()">提交余款</button>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- 退款弹窗 -->
+    <div id="refundModal" class="modal">
+        <h3>退款提示</h3>
+        <p id="refundText"></p>
+        <button onclick="closeRefundModal()">确定</button>
+    </div>
+<div id="modalOverlay" class="modal-overlay"></div>
+    <script>
+        const API_BASE_URL = 'http://localhost:3000';
+
+        let cachedDeleteIds = [];
+        async function queryStatus() {
+
+
+            const paymentCode = document.getElementById('paymentCode').value.trim();
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'none';
+
+            if (!paymentCode) {
+                alert('请输入订单编号');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/payment/${paymentCode}`);
+                const data = await response.json();
+                if (!response.ok) {
+                    alert(data.data || '查询失败');
+                    return;
+                }
+
+                  cachedDeleteIds = data.data.ids || [];
+        console.log('缓存的ids:', cachedDeleteIds); // 调试用
+
+                // 原有显示查询结果
+                document.getElementById('tourCode').textContent = data.data.tour_code;
+                document.getElementById('applicantName').textContent = data.data.applicant_name;
+                document.getElementById('isPaid').textContent = data.data.is_paid === 1 ? '已支付' : '未支付';
+
+                // Configure buttons
+                const payButton = document.getElementById('payButton');
+                if (data.data.is_paid === 1) {
+                    payButton.disabled = true;
+                } else {
+                    payButton.disabled = false;
+                }
+
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                console.error('查询失败:', error);
+                alert('查询失败，请稍后再试');
+            }
+
+
+        }
+
+        function modifyInfo() {
+    const tourCode = document.getElementById('tourCode').textContent.trim();
+    const applicantName = document.getElementById('applicantName').textContent.trim();
+    const paymentCode = document.getElementById('paymentCode').value.trim(); // 假设你的订单编号在input里
+
+    if (!tourCode || !applicantName || !paymentCode) {
+        alert('请先查询并确认订单信息');
+        return;
+    }
+
+    // 跳转并传递旅行团代码、负责人姓名、订单编号
+    window.location.href =
+        `modify.html?tour_code=${encodeURIComponent(tourCode)}&applicant_name=${encodeURIComponent(applicantName)}&payment_code=${encodeURIComponent(paymentCode)}`;
+}
+
+async function deleteInfo() {
+    const paymentCode = document.getElementById('paymentCode').value.trim();
+    if (!paymentCode) {
+        alert('请输入订单编号');
+        return;
+    }
+    const confirmDelete = confirm('确定要取消订单吗？');
+    if (!confirmDelete) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/payment/${paymentCode}/cancel`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ids: cachedDeleteIds // 带上id数组
+            })
+        });
+        const data = await response.json();
+        if (response.ok) {
+            // 弹窗显示退款金额
+            showRefundModal(data.data.refund || "0.00");
+        } else {
+            alert(data.data || '取消订单失败');
+        }
+    } catch (error) {
+        console.error('取消订单失败:', error);
+        alert('取消订单失败，请稍后再试');
+    }
+}
+
+        async function submitPayment() {
+            const paymentCode = document.getElementById('paymentCode').value.trim();
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/payment/${paymentCode}/pay`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                const { tour_code, applicant_name, is_paid } = data.data;
+
+                if (response.ok) {
+                    alert('支付成功');
+                    queryStatus(); // Refresh status
+                } else {
+                    alert(data.data || '支付失败');
+                }
+            } catch (error) {
+                console.error('支付失败:', error);
+                alert('支付失败，请稍后再试');
+            }
+        }
+
+        function showRefundModal(refund) {
+    document.getElementById('refundText').textContent = `您收到的退款为 ${refund} 元`;
+    document.getElementById('refundModal').style.display = 'block';
+    document.getElementById('modalOverlay').style.display = 'block';
+}
+function closeRefundModal() {
+    document.getElementById('refundModal').style.display = 'none';
+    document.getElementById('modalOverlay').style.display = 'none';
+    location.reload();
+}
+    </script>
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅游申请书</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+        .section-title {
+            text-align: center;
+            font-weight: bold;
+            background: #f9fafb;
+            font-size: 1.07em;
+            letter-spacing: 2px;
+        }
+        input, select {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background: #fafbfc;
+        }
+        input[type="date"] {
+            padding: 6px;
+        }
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+        button {
+            padding: 12px 28px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        /* 弹窗样式 */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px 32px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            min-width: 350px;
+            max-width: 90vw;
+            z-index: 1000;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal h3 {
+            margin: 0 0 16px 0;
+            font-size: 1.2em;
+            color: #2980b9;
+        }
+        .modal .confirm-content {
+            margin-bottom: 16px;
+            font-size: 15px;
+            white-space: pre-line;
+        }
+        .modal .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-top: 18px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 500;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 6px;
+            }
+            .modal {
+                min-width: 90vw;
+                padding: 10px 8px;
+            }
+            table, th, td {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>旅游申请书</h1>
+        <form id="travelForm">
+            <table>
+                <tr>
+                    <td>旅游团代码</td>
+                    <td colspan="3"><input type="text" name="tour_code" required></td>
+                    <td>出发日期</td>
+                    <td colspan="3"><input type="date" name="departure_date" required></td>
+                </tr>
+                <tr>
+                    <td>路线名</td>
+                    <td colspan="7"><input type="text" name="route_name" required></td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="section-title">申请人信息</td>
+                </tr>
+                <tr>
+                    <td>姓名</td>
+                    <td colspan="2"><input type="text" name="applicant_name" required></td>
+                    <td>性别</td>
+                    <td>
+                        <select name="gender" required>
+                            <option value="">请选择</option>
+                            <option value="male">男</option>
+                            <option value="female">女</option>
+                        </select>
+                    </td>
+                    <td>出生日期</td>
+                    <td colspan="2"><input type="date" name="birth_date" required></td>
+                </tr>
+                <tr>
+                    <td>联系电话</td>
+                    <td colspan="3"><input type="text" name="phone_number" required></td>
+                    <td>Email</td>
+                    <td colspan="3"><input type="email" name="email" required></td>
+                </tr>
+                <tr>
+                    <td>联系地址</td>
+                    <td colspan="7"><input type="text" name="address" required></td>
+                </tr>
+                <tr>
+                    <td>邮政编码</td>
+                    <td colspan="7"><input type="text" name="postal_code" required></td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="section-title">旅游途中联系方式</td>
+                </tr>
+                <tr>
+                    <td>姓名</td>
+                    <td colspan="2"><input type="text" name="emergency_contact_name" required></td>
+                    <td>与本人关系</td>
+                    <td colspan="3"><input type="text" name="emergency_contact_relation" required></td>
+                </tr>
+                <tr>
+                    <td>电话号码</td>
+                    <td colspan="2"><input type="text" name="emergency_contact_phone" required></td>
+                    <td>联系地址</td>
+                    <td colspan="3"><input type="text" name="emergency_contact_address" required></td>
+                </tr>
+            </table>
+            <div class="form-buttons">
+                <button type="button" onclick="addAndResetForm()">新增</button>
+                <button type="button" onclick="submitForm()">提交</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal" id="modal">
+        <div id="modalContent">
+            <h3>负责人需要交的总费用</h3>
+            <p id="totalFee">计算中...</p>
+        </div>
+        <div id="confirmContent" style="display:none;">
+            <h3>旅游确认书</h3>
+            <div class="confirm-content" id="confirmLetter"></div>
+            <div class="modal-buttons">
+                <button onclick="confirmPayment(true)">支付</button>
+                <button onclick="confirmPayment(false)">稍后</button>
+            </div>
+        </div>
+        <div class="modal-buttons" id="modalCloseBtn" style="display:none;">
+            <button onclick="closeModal()">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        let lastFormData = null;
+        let lastTotalFee = null;
+        let lastPaymentCode = null;
+
+        function addAndResetForm() {
+            const form = document.getElementById('travelForm');
+            const formData = new FormData(form);
+            fetch('http://localhost:3000/submit', {
+                method: 'POST',
+                body: JSON.stringify(Object.fromEntries(formData)),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('新增成功！');
+                form.reset();
+            })
+            .catch(error => {
+                console.error('错误:', error);
+                alert('新增失败！');
+            });
+        }
+
+        function submitForm() {
+            const form = document.getElementById('travelForm');
+            const formData = new FormData(form);
+            const lastFormObj = Object.fromEntries(formData);
+            lastFormData = lastFormObj;
+            const applicantName = formData.get('applicant_name');
+            const tourCode = formData.get('tour_code');
+            const departureDate = formData.get('departure_date');
+
+            lastPaymentCode = `PAY-${Date.now()}`;
+
+            fetch('http://localhost:3000/submit', {
+                method: 'POST',
+                body: JSON.stringify(lastFormObj),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('数据插入失败');
+                }
+                return response.json();
+            })
+            .then(() => {
+                return fetch('http://localhost:3000/payment', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        payment_code: lastPaymentCode,
+                        tour_code: tourCode,
+                        departure_date: departureDate,
+                        applicant_name: applicantName,
+                        is_paid: false
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('支付信息插入失败');
+                }
+                return response.json();
+            })
+            .then(() => {
+                return fetch(`http://localhost:3000/calculate-fee?name=${encodeURIComponent(applicantName)}`, {
+                    method: 'GET',
+                });
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('计算费用失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                lastTotalFee = data.totalFee || (data.data && data.data.totalFee) || data.data || data; // 兼容多种格式
+                document.getElementById('modalContent').style.display = 'block';
+                document.getElementById('confirmContent').style.display = 'none';
+                document.getElementById('modalCloseBtn').style.display = 'none';
+                document.getElementById('totalFee').innerText = `￥${lastTotalFee}`;
+                openModal();
+                setTimeout(() => {
+                    showConfirmLetter();
+                }, 1500);
+            })
+            .catch(error => {
+                console.error('错误:', error);
+                alert('提交失败或计算费用失败！');
+            });
+        }
+
+        function showConfirmLetter() {
+            if (!lastFormData) return;
+            const name = lastFormData.applicant_name || '';
+            const gender = lastFormData.gender === 'male' ? '男' : (lastFormData.gender === 'female' ? '女' : '');
+            const route_name = lastFormData.route_name || '';
+            const departure_date = lastFormData.departure_date || '';
+            const phone_number = lastFormData.phone_number || '';
+            const address = lastFormData.address || '';
+            const emergency_phone = lastFormData.emergency_contact_phone || '';
+            const paymentCode = lastPaymentCode || '';
+            const totalFee = lastTotalFee !== null ? `￥${lastTotalFee}` : '';
+
+            const confirmLetter = 
+`尊敬的${name}先生/女士：
+
+感谢您选择我们的旅游服务！我们很高兴为您安排这次难忘的旅行。请您在此确认旅行的相关安排和注意事项。
+
+1. 旅行信息
+
+- 性别：${gender}
+- 旅游线路：${route_name}
+- 出发日期：${departure_date}
+- 联系电话：${phone_number}
+- 联系地址：${address}
+- 紧急联络人电话：${emergency_phone}
+
+2. 费用明细
+
+- 订单编号：${paymentCode}
+- 交付费用：${totalFee}
+
+3. 旅行保障与安全
+
+- 我们将确保为您提供安全、舒适的旅行体验。所有交通工具和住宿均符合安全规定。
+- 我们强烈建议您购买旅行保险，以便在旅行过程中享有额外保障。
+
+4. 注意事项
+
+- 请您确保按时到达集合地点，并保管好个人财物。
+- 如果在旅行中遇到任何紧急情况，请立即联系旅行社工作人员。
+- 请您在旅行前核对个人证件是否齐全，确保签证、身份证等有效。
+
+5. 确认与签字
+
+此确认书一旦签字即表示您已了解并同意上述旅行安排和条款。请您在下方签字以确认您的参与。
+
+---
+
+旅客确认签字：  
+签字：______________________  
+日期：______________________  
+
+---
+
+旅行社确认：  
+签字：______________________  
+日期：______________________  
+`;
+
+            document.getElementById('modalContent').style.display = 'none';
+            document.getElementById('confirmContent').style.display = 'block';
+            document.getElementById('modalCloseBtn').style.display = 'none';
+            document.getElementById('confirmLetter').innerText = confirmLetter;
+        }
+
+        function confirmPayment(isPaid) {
+            fetch(`http://localhost:3000/payment/${lastPaymentCode}`, {
+                method: 'PUT',
+                body: JSON.stringify({ is_paid: isPaid }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('更新支付状态失败');
+                }
+                return response.json();
+            })
+            .then(() => {
+                if (isPaid) {
+                    alert("支付成功！");
+                } else {
+                    alert('稍后完成支付！');
+                }
+                closeModal();
+                document.getElementById('travelForm').reset();
+            })
+            .catch(error => {
+                console.error('错误:', error);
+                alert('更新支付状态失败！');
+            });
+        }
+
+        function openModal() {
+            document.getElementById('modalOverlay').style.display = 'block';
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('modalContent').style.display = 'block';
+            document.getElementById('confirmContent').style.display = 'none';
+            document.getElementById('modalCloseBtn').style.display = 'none';
+        }
+
+        // 可选：当确认书显示后，允许关闭弹窗
+        document.getElementById('modalOverlay').addEventListener('click', closeModal);
+    </script>
+</body>
+</html>

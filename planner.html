@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>旅游线路管理</title>
+  <link rel="stylesheet" href="style/style.css">
+</head>
+<body>
+
+  <!-- 顶部大图及标题 -->
+ <header class="sales-hero">
+    <div class="hero-overlay">
+      <h1>旅游线路管理</h1>
+    </div>
+  </header>
+
+  <main>
+    <!-- 使用新的按钮样式 -->
+    <section class="main-buttons">
+      <div class="card-btn" id="routeManagementButton">
+        <div class="overlay"></div>
+        <div class="icon">🛣️</div>
+        <div class="text">线路管理</div>
+      </div>
+      <div class="card-btn" id="routeAddEditButton">
+        <div class="overlay"></div>
+        <div class="icon">➕</div>
+        <div class="text">线路增改</div>
+      </div>
+    </section>
+
+    <!-- 线路管理列表 -->
+    <section class="route-list" id="routeManagementSection">
+      <h2>当前旅游线路</h2>
+      <ul id="routeList"></ul>
+    </section>
+
+    <!-- 新增／修改线路表单，初始隐藏 -->
+    <section class="add-route" id="routeAddEditSection" style="display: none;">
+      <h2>新增／修改线路</h2>
+      <form id="routeForm">
+        <input type="text" id="routeName" placeholder="线路名称" required>
+        <input type="number" id="routePrice" placeholder="线路价格" required>
+        <button type="submit">保存</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- 切换显示脚本 -->
+  <script>
+    const mgmtBtn = document.getElementById('routeManagementButton');
+    const editBtn = document.getElementById('routeAddEditButton');
+    const mgmtSec = document.getElementById('routeManagementSection');
+    const editSec = document.getElementById('routeAddEditSection');
+
+    mgmtBtn.addEventListener('click', () => {
+      mgmtSec.style.display = 'block';
+      editSec.style.display = 'none';
+    });
+
+    editBtn.addEventListener('click', () => {
+      mgmtSec.style.display = 'none';
+      editSec.style.display = 'block';
+    });
+  </script>
+
+</body>
+</html>

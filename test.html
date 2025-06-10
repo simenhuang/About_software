@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅游线路查询</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result, .form-container {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none; /* 默认隐藏 */
+        }
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            display: none; /* 默认隐藏 */
+            z-index: 1000;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none; /* 默认隐藏 */
+            z-index: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>旅游线路查询</h1>
+        
+        <form id="tourForm">
+            <div class="form-group">
+                <label for="route">选择路线</label>
+                <select id="route" required>
+                    <option value="">-- 请选择旅游路线 --</option>
+                    <option value="beijing">北京五日游</option>
+                    <option value="shanghai">上海都市游</option>
+                    <option value="guilin">桂林山水游</option>
+                    <option value="yunnan">云南风情游</option>
+                    <option value="xizang">西藏探险游</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="people">参团人数</label>
+                <input type="number" id="people" min="1" max="20" required placeholder="请输入参团人数(1-20)">
+            </div>
+            
+            <div class="form-group">
+                <label for="date">出发日期</label>
+                <input type="date" id="date" required>
+            </div>
+            
+            <button type="submit" id="submitBtn">查询</button>
+        </form>
+        
+        <div class="result" id="result">
+            <h2>查询结果</h2>
+            <p><strong>旅行团代码：</strong><span id="result-id"></span></p>
+            <p><strong>路线：</strong><span id="result-route"></span></p>
+            <p><strong>参团人数：</strong><span id="result-max-people"></span></p>
+            <p><strong>出发日期：</strong><span id="result-date"></span></p>
+            <p><strong>价格：</strong><span id="result-tip"></span></p>
+            <button id="inBtn">报名</button>
+        </div>
+
+        <!-- 报名表单 -->
+        <div class="form-container" id="signupForm">
+            <h2>报名表单</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="tour-id">旅行团代码</label>
+                    <input type="text" id="tour-id" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="name">姓名</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">电话号码</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-people">参团人数</label>
+                    <input type="number" id="signup-people" min="1" max="20" required>
+                </div>
+                <button type="submit">提交报名</button>
+            </form>
+        </div>
+
+        <!-- 弹窗 -->
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal" id="modal">
+            <p id="modalMessage"></p>
+            <button id="closeModal">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedTourId;
+        let selectedPricePerPerson;
+
+        document.getElementById('tourForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+    
+            // 获取表单数据
+            const route = document.getElementById('route').value;
+            const people = parseInt(document.getElementById('people').value, 10);
+            const date = document.getElementById('date').value;
+    
+            // 验证数据
+            if (!route || !people || !date) {
+                alert('请填写完整表单信息');
+                return;
+            }
+    
+            // 调用后端 API
+            fetch('http://localhost:3000/api/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ route, date, people }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+    
+                    if (data.message) {
+                        alert(data.message);
+                        return;
+                    }
+    
+                    // 显示结果
+                    const result = data.data[0]; // 假设只取第一个结果
+                    selectedTourId = result.id; // 保存旅行团代码
+                    selectedPricePerPerson = result.price; // 每人价格
+                    document.getElementById('result-id').textContent = result.id;
+                    document.getElementById('result-route').textContent = result.route;
+                    document.getElementById('result-max-people').textContent = result.max_people;
+                    document.getElementById('result-date').textContent = new Date(result.date).toLocaleDateString();
+                    document.getElementById('result-tip').textContent = `${result.price} 元`;
+    
+                    document.getElementById('result').style.display = 'block';
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('查询失败，请稍后再试');
+                });
+        });
+
+        // 点击“报名”按钮
+        document.getElementById('inBtn').addEventListener('click', function() {
+            document.getElementById('tour-id').value = selectedTourId; // 设置旅行团代码
+            document.getElementById('signupForm').style.display = 'block'; // 显示报名表单
+        });
+
+        // 提交报名表单逻辑
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+    
+            const tourId = document.getElementById('tour-id').value;
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const signupPeople = parseInt(document.getElementById('signup-people').value, 10);
+    
+            if (!name || !phone || !signupPeople) {
+                alert('请填写完整表单信息');
+                return;
+            }
+    
+            fetch('http://localhost:3000/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ tourId, name, phone, signupPeople }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    // 计算订金金额
+                    //const deposit = calculateDeposit(data.departureDate, selectedPricePerPerson, signupPeople);
+                     const deposit = data.data.deposit;
+                    // 显示弹窗
+                    const modal = document.getElementById('modal');
+                    const modalOverlay = document.getElementById('modalOverlay');
+                    document.getElementById('modalMessage').textContent = `您需交付的订金为 ${deposit} 元`;
+                    modal.style.display = 'block';
+                    modalOverlay.style.display = 'block';
+
+                    // 隐藏报名表单
+                    document.getElementById('signupForm').style.display = 'none';
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('报名失败，请稍后再试');
+                });
+        });
+
+        //  // 根据规则计算订金金额 后端有
+        // function calculateDeposit(departureDate, pricePerPerson, signupPeople) {
+        // const currentDate = new Date(); // 当前日期
+        // const departure = new Date(departureDate); // 出发日期
+        // const diffTime = departure - currentDate; // 时间差（毫秒）
+        // const diffDays = diffTime / (1000 * 60 * 60 * 24); // 转换为天数
+
+        // let depositRate = 0;
+        // if (diffDays > 60) { // 两个月以上
+        //     depositRate = 0.1;
+        // } else if (diffDays > 30 && diffDays <= 60) { // 一个月到两个月之间
+        //     depositRate = 0.2;
+        // } else if (diffDays <= 30) { // 不足一个月
+        //     depositRate = 1;
+        // }
+
+        // return pricePerPerson * signupPeople * depositRate; // 返回总订金
+        // }
+
+        // 关闭弹窗
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('modalOverlay').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
